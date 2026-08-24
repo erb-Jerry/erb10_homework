@@ -12,10 +12,15 @@ import time
 BASE_DIR = Path(__file__).resolve().parent
 SAMPLE_ROOT = BASE_DIR / "sample_images"
 
-# 專案 media 目錄（改成你的實際路徑）
+# linux
 # /home/user/Django_NextJs_Project/backend/media/images
-BACKEND_ROOT = BASE_DIR.parent
-MEDIA_IMAGES = BACKEND_ROOT / "backend"/"media"/"images"
+# BACKEND_ROOT = BASE_DIR.parent
+# MEDIA_IMAGES = BACKEND_ROOT / "backend"/"media"/"images"
+
+# Windows
+# H:\erb_project\fullstack_nextjs_django_drf_uml\backend_drf
+BACKEND_ROOT = Path("H:/erb_project/fullstack_nextjs_django_drf_uml/backend_drf")
+MEDIA_IMAGES = BACKEND_ROOT / "media" / "images"
 
 
 
