@@ -14,7 +14,7 @@ SAMPLE_ROOT = BASE_DIR / "sample_images"
 
 # 專案 media 目錄（改成你的實際路徑）
 # /home/user/Django_NextJs_Project/backend/media/images
-BACKEND_ROOT = BASE_DIR.parent.parent
+BACKEND_ROOT = BASE_DIR.parent
 MEDIA_IMAGES = BACKEND_ROOT / "backend"/"media"/"images"
 
 
@@ -58,6 +58,52 @@ BRAND_NAMES = [
     "ASUS", "MSI", "Gigabyte", "Intel", "AMD",
     "Corsair", "Samsung", "Kingston", "NVIDIA", "Cooler Master",
 ]
+
+PRODUCT_NAMES_BY_CATEGORY = {
+    "CPU": [
+        "Intel Core i5-14400F",
+        "Intel Core i7-14700K",
+        "AMD Ryzen 5 7600",
+        "AMD Ryzen 7 7800X3D",
+    ],
+    "GPU": [
+        "RTX 4060",
+        "RTX 4070",
+        "RTX 4070 Super",
+        "RX 7600",
+        "RX 7800 XT",
+    ],
+    "RAM": [
+        "DDR5 16GB 6000MHz",
+        "DDR5 32GB 6000MHz",
+        "DDR4 16GB 3200MHz",
+    ],
+    "Motherboard": [
+        "B650 Motherboard",
+        "Z790 Motherboard",
+        "B760 Motherboard",
+    ],
+    "Storage": [
+        "1TB NVMe SSD",
+        "2TB NVMe SSD",
+        "1TB SATA SSD",
+    ],
+    "PSU": [
+        "650W 80+ Gold PSU",
+        "750W 80+ Gold PSU",
+        "850W 80+ Gold PSU",
+    ],
+    "Case": [
+        "ATX Mid Tower Case",
+        "Full Tower Case",
+        "Mini ITX Case",
+    ],
+    "Cooler": [
+        "Air Cooler",
+        "240mm AIO Cooler",
+        "360mm AIO Cooler",
+    ],
+}
 
 CATEGORY_DATA = [
     ("CPU", "component"),
@@ -140,36 +186,47 @@ def attach_product_image(cur, product_id: int, category_name: str):
         0,      # sort_order
     ))
 
-def gen_products(cur, brands, categories, n=50):
+def gen_products(cur, brand_ids, categories, n=50):
+    """
+    categories: list of (id, name)
+    """
     prefix = int(time.time())
+
     for i in range(1, n + 1):
         cat_id, cat_name = random.choice(categories)
-        brand_id = random.choice(brands)
 
-        base = random.choice(PRODUCT_NAMES)
+        # 依 category 選名稱
+        name_pool = PRODUCT_NAMES_BY_CATEGORY.get(cat_name)
+        if not name_pool:
+            name_pool = ["Generic PC Part"]
+
+        base = random.choice(name_pool)
         name = f"{base} #{i}"
+
         price = Decimal(random.randint(299, 9999)) + Decimal("0.99")
+        original = price + Decimal(random.randint(50, 1500))
+        sku = f"SKU-GEN-{prefix}-{i}"
 
         cur.execute(INSERT_PRODUCT, (
             name,
             f"Sample description for {name}",
             price,
-            price + Decimal(100),
+            original,
             random.randint(5, 200),
-            f"SKU-GEN-{prefix}-{i}",
+            sku,
             round(random.uniform(0.2, 5.0), 2),
             round(random.uniform(3.5, 5.0), 2),
             True,
             random.randint(0, 500),
-            brand_id,
+            random.choice(brand_ids),
             cat_id,
         ))
         product_id = cur.fetchone()[0]
 
-        # 依 category 掛圖
+        # 圖片也依同一個 category
         attach_product_image(cur, product_id, cat_name)
-    print(f"Generated {n} products")
 
+    print(f"Generated {n} products")
 
 def main():
     conn = None
