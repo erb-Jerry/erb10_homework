@@ -1,0 +1,2 @@
+id,name,description,price,original_price,stock_quantity,sku,weight,rating,is_published,sell_count,brand_id,category_id,created_datetime,updated_datetime
+,Sample Product Name23,Sample description text here 222222,99.99,120.00,100,SKU-1234555,0.5,4.5,True,0,1,1,2026-08-25 12:00:00,2026-08-25 12:00:00

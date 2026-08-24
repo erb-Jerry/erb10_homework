@@ -176,12 +176,12 @@ def attach_product_image(cur, product_id: int, category_name: str):
 
     MEDIA_IMAGES.mkdir(parents=True, exist_ok=True)
 
-    # 避免重名：加上 product_id
+    #  product_id
     dest_name = f"{product_id}_{src.name}"
     dest = MEDIA_IMAGES / dest_name
     shutil.copy2(src, dest)
 
-    # DB 存相對路徑（對應 ImageField upload_to='images'）
+    # DB ImageField upload_to='images'
     db_path = f"images/{dest_name}"
 
     cur.execute(INSERT_IMAGE, (
@@ -200,7 +200,7 @@ def gen_products(cur, brand_ids, categories, n=50):
     for i in range(1, n + 1):
         cat_id, cat_name = random.choice(categories)
 
-        # 依 category 選名稱
+        # choice name by category
         name_pool = PRODUCT_NAMES_BY_CATEGORY.get(cat_name)
         if not name_pool:
             name_pool = ["Generic PC Part"]
@@ -228,7 +228,7 @@ def gen_products(cur, brand_ids, categories, n=50):
         ))
         product_id = cur.fetchone()[0]
 
-        # 圖片也依同一個 category
+        # category for image
         attach_product_image(cur, product_id, cat_name)
 
     print(f"Generated {n} products")
