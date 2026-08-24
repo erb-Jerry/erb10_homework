@@ -5,9 +5,12 @@ from pathlib import Path
 import psycopg2
 from db_config import DB_CONFIG
 
+
+EXPORT_FOLDER="csv_files"
+
 BASE_DIR = Path(__file__).resolve().parent
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-OUTPUT = BASE_DIR / "csv_files" / f"products_export_{timestamp}.csv"
+OUTPUT = BASE_DIR / EXPORT_FOLDER / f"products_export_{timestamp}.csv"
 
 SQL = """
 SELECT
@@ -25,6 +28,9 @@ def export_products():
     cur.execute(SQL)
     rows = cur.fetchall()
     headers = [d[0] for d in cur.description]
+    
+    # auto create dir  
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
     with open(OUTPUT, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
